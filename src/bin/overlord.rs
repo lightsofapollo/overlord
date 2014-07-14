@@ -131,7 +131,6 @@ impl<'a> CLI<'a> {
 
     let subcommand = self.matches.free.get(0).as_slice();
     match subcommand {
-      "run" => self.cmd_suites(),
       "suites" => self.cmd_suites(&config),
       "help" => self.cmd_help(),
       _ => Err(OverlordError::new("Unknown subcommand".to_string()))
