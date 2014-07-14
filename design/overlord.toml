@@ -1,16 +1,19 @@
-[suites.unit]
-# Human title of the suite.
-title = "Unit tests"
+# List of sub manifests to be loaded.
+manifests = [
+  "subdirectory/overlord.toml",
+  "subdirectory2/overlord.toml"
+]
 
+# Descriptions for each suite these are seperate from individual suite
+# statements so each configuration file may list mutliple suites but only the
+# top level manifest is intended to contain the descriptions field.
+[descriptions]
+unit = "Unit tests"
+
+[suites.unit]
 # Rust glob based paths (no directory recursion)
 paths = ["foobar/*.rs"]
-
-# Optional executable which will be invoked to expand additional paths.
-# The expected output is an exit code of 0 with newline delimited paths (such as
-# can be found by the `find` utility or `ls -1`.
-path_bin = "find $PWD -name '*_test.rs'"
 
 # Executable used to run the task. For example if you wanted to test that each
 # file is executable.
 executable = "test -x"
-

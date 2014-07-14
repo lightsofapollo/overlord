@@ -16,14 +16,8 @@ pub struct Config<'a> {
 // Struct describing the state of the config suite prior to transforming it.
 #[deriving(Decodable, Encodable, Show, Clone)]
 pub struct SuiteConfig<'a> {
-  // Human readable title of the suite.
-  pub title: String,
-
   // Absolute paths to test files.
   pub paths: Vec<String>,
-
-  // Path to binary which will be used to expand the list of paths.
-  pub path_bin: Option<String>,
 
   // Executable used to run the paths.
   pub executable: String
@@ -32,7 +26,11 @@ pub struct SuiteConfig<'a> {
 // Struct describing the config.
 #[deriving(Decodable, Encodable, Show)]
 pub struct ManifestConfig<'a> {
-  pub suites: HashMap<String, SuiteConfig<'a>>
+  // Suites for thie manifest.
+  pub suites: HashMap<String, SuiteConfig<'a>>,
+
+  // Optional descritpitons for this manifest.
+  pub descriptions: Option<HashMap<String, String>>
 }
 
 impl<'a> SuiteConfig<'a> {

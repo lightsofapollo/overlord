@@ -116,7 +116,7 @@ impl<'a> CLI<'a> {
     // TODO: Figure out how to generate machine readable output?
     println!("Available suites:")
     for (name, suite) in config.manifest.suites.iter() {
-      println!("    {} - {}", name, suite.title);
+      println!("    {}", name);
     }
     println!("")
     Ok(())
