@@ -1,0 +1,15 @@
+[package]
+name = "overlord"
+version = "0.0.1"
+authors = ["James Lal [:lightsofapollo] <james@lightsofapollo.com>"]
+
+[dependencies.toml]
+git = "https://github.com/alexcrichton/toml-rs"
+
+[[bin]]
+path = "src/bin/overlord.rs"
+name = "overlord"
+
+[[lib]]
+path = "src/overlord/lib.rs"
+name = "liboverlord"

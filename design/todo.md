@@ -1,0 +1,6 @@
+- configuration format for defining suites
+- file finder algorithm
+- recursive configuration format
+- command configuration
+- command runner
+- command output parser

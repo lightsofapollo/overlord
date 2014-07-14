@@ -1,0 +1,4 @@
+[suites.globs]
+title = "Globs win"
+paths = ["folder/*.txt"]
+executable = "ls"
