@@ -1,16 +1,19 @@
 use config::{Config};
 use error::{OverlordResult, OverlordError};
-use glob::{glob, Pattern, MatchOptions};
+use glob::{Pattern, MatchOptions};
 use std::os;
+use std::rc::Rc;
 
 pub struct Suite<'a> {
-  name: String,
-  paths: Vec<String>,
+  pub name: String,
+  //desc: Option<String>,
+  pub paths: Vec<String>,
+  pub config: Rc<Config>
 }
 
-impl<'a> Suite<'a> {
-  pub fn from_config(name: String, config: &Config) -> OverlordResult<Suite> {
-    let config_suite = match config.manifest.suites.find(&name) {
+impl<'a,> Suite<'a> {
+  pub fn from_config(name: &String, config: &'a Config) -> OverlordResult<Suite<'a>> {
+    let config_suite = match config.manifest.suites.find(name) {
       Some(v) => v,
       None => {
         return Err(OverlordError::new(format!(
@@ -26,7 +29,9 @@ impl<'a> Suite<'a> {
     }).collect::<Vec<String>>();
 
     Ok(Suite{
-      name: name,
+      config: config,
+      //config: Rc::new(config),
+      name: name.clone(),
       paths: paths
     })
   }
@@ -47,7 +52,6 @@ impl<'a> Suite<'a> {
     // we could do.
     self.paths.iter().any(|path_str| {
       let pattern = Pattern::new(path_str.as_slice());
-      println!("{} == {}", compare_path.display(), path_str);
       pattern.matches_path_with(&compare_path, options)
     })
   }
@@ -58,12 +62,11 @@ mod tests {
   use config::{Config};
   use suite::{Suite};
   use std::os;
-  use glob::glob;
   use test;
 
   fn glob_suite() -> (Config, Suite) {
     let config = test::config("test/globs/overlord.toml");
-    let suite = match Suite::from_config("globs".to_string(), &config) {
+    let suite = match Suite::from_config(&"globs".to_string(), &config) {
       Ok(v) => v,
       Err(e) => fail!("Failed to find suite {} {}", "globs", e)
     };
@@ -71,20 +74,15 @@ mod tests {
     return (config, suite);
   }
 
-  // Sorts and converts paths to strings...
-  fn vec_path_to_string(paths: Vec<Path>) -> Vec<String> {
-    let mut sortable = paths.clone();
-    sortable.sort_by(|a, b| a.cmp(b));
-    sortable.iter().
-      map(|x| {
-        os::make_absolute(x).as_str().unwrap().to_string()
-      }).
-      collect()
+  #[test]
+  fn from_config() {
+    let (_, suite) = glob_suite();
+    assert_eq!(suite.name, "globs".to_string());
   }
 
   #[test]
   fn test_contains_path() {
-    let (config, suite) = glob_suite();
+    let (_, suite) = glob_suite();
     let matches_rel_path = Path::new("folder/bar.txt");
     let no_match = Path::new("folder/nested/forgotten.txt");
 

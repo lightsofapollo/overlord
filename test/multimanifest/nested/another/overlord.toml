@@ -1,0 +1,3 @@
+[suites.unit]
+paths = [".*txt"]
+executable = "another"

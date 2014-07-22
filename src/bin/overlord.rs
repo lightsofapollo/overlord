@@ -104,7 +104,7 @@ impl<'a> CLI<'a> {
 
   fn load_config(&self) -> OverlordResult<Config> {
     let path = try!(self.config_path());
-    Config::parse(path)
+    Config::parse(&path)
   }
 
   fn cmd_help(&self) -> OverlordResult<()> {

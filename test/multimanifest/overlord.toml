@@ -1,0 +1,9 @@
+manifests = [
+  "1/overlord.toml",
+  "2/overlord.toml",
+  "nested/overlord.toml"
+]
+
+[suites.unit]
+paths = []
+executable = ""

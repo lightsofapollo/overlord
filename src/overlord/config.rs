@@ -26,6 +26,8 @@ pub struct SuiteConfig<'a> {
 // Struct describing the config.
 #[deriving(Decodable, Encodable, Show)]
 pub struct ManifestConfig<'a> {
+  pub manifests: Option<Vec<String>>,
+
   // Suites for thie manifest.
   pub suites: HashMap<String, SuiteConfig<'a>>,
 
@@ -66,19 +68,19 @@ impl<'a> ManifestConfig<'a> {
 }
 
 impl<'a> Config<'a> {
-  pub fn parse(path: Path) -> OverlordResult<Config> {
-    let content = File::open(&path).read_to_end().unwrap();
+  pub fn parse(path: &Path) -> OverlordResult<Config> {
+    let content = File::open(path).read_to_end().unwrap();
     let fixture = str::from_utf8(content.as_slice()).unwrap();
     return Config::from_toml_string(path, fixture);
   }
 
-  pub fn from_toml_string(path: Path, toml: &str) -> OverlordResult<Config> {
+  pub fn from_toml_string(path: &Path, toml: &str) -> OverlordResult<Config> {
     let manifest_config = match ManifestConfig::from_toml_string(toml) {
       Err(e) => return Err(e),
       Ok(v) => v
     };
 
-    Ok(Config {path: path, manifest: manifest_config})
+    Ok(Config {path: path.clone(), manifest: manifest_config})
   }
 }
 

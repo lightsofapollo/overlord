@@ -8,7 +8,7 @@ pub static EXAMPLE_PATH: &'static str = "design/overlord.toml";
 // Load a manifest configuration file from disk and return a ManifestConfig.
 // Remember that all paths are relative to the _root_ of the project.
 pub fn config(path: &str) -> Config {
-  match Config::parse(Path::new(path)) {
+  match Config::parse(&Path::new(path)) {
     Ok(v) => {
       v
     },

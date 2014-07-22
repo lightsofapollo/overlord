@@ -1,0 +1,7 @@
+manifests = [
+  "another/overlord.toml"
+]
+
+[suites.unit]
+paths = []
+executable = ""
