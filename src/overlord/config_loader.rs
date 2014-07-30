@@ -162,6 +162,7 @@ mod tests {
   fn circular_references() {
     // Note that we don't throw an error but do our best effort to load suites.
     let suites = import(Path::new("test/circular/overlord.toml")).unwrap();
+    assert_path_eq(&Path::new("test/circular"), &suites[0].root);
     assert_eq!(suites.len(), 1);
   }
 }
