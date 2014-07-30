@@ -126,8 +126,8 @@ pub fn import<'a>(path: Path) -> OverlordResult<Vec<Suite<'a>>> {
 }
 
 #[cfg(test)]
-mod test {
-  use std::os;
+mod tests {
+  use test::{assert_path_eq};
   use config_loader::{import};
 
   #[test]
@@ -136,13 +136,8 @@ mod test {
 
     assert_eq!(suites.len(), 1);
     let ref suite = suites[0];
-    let expected_path = os::make_absolute(&Path::new("test/simple"));
 
-    assert!(
-      expected_path == suite.root,
-      format!("{} !== {}", suite.root.display(), expected_path.display())
-    );
-
+    assert_path_eq(&Path::new("test/simple"), &suite.root);
     assert_eq!(vec!["files/*.txt".to_string()], suite.paths);
     assert_eq!(suite.executable, "cat".to_string());
     assert_eq!(suite.group, "unit".to_string());
@@ -150,8 +145,17 @@ mod test {
 
   #[test]
   fn nested_manifest() {
+    // Note that this main manifest has no suites...
     let suites = import(Path::new("test/multimanifest/overlord.toml")).unwrap();
     assert_eq!(suites.len(), 4);
+
+    // Note that all suites are ordered so it is easy to assert root paths here.
+    assert_path_eq(&Path::new("test/multimanifest/1"), &suites[0].root);
+    assert_path_eq(&Path::new("test/multimanifest/2"), &suites[1].root);
+    assert_path_eq(&Path::new("test/multimanifest/nested"), &suites[2].root);
+    assert_path_eq(
+      &Path::new("test/multimanifest/nested/another"), &suites[3].root
+    );
   }
 
   #[test]
