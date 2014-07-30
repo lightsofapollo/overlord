@@ -109,7 +109,7 @@ fn issue_import(
       let sub_manifest_path = Path::new(sub_manifest.as_slice());
       let absolute_manifest_path = path.dir_path().join(sub_manifest_path);
       let sub_suites = try!(issue_import(absolute_manifest_path, seen_paths));
-      suites.push_all(sub_suites.as_slice());
+      suites.push_all_move(sub_suites);
     }
     Ok(suites)
   }
