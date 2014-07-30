@@ -82,8 +82,12 @@ fn issue_import(
   // Attempt to load the module for the seen path.
   let manifest = try!(load_manifest(&path));
 
+  if manifest.suites.is_none() {
+    return Ok(Vec::new());
+  }
+
   // List of suites in the group.
-  let mut suites = manifest.suites.iter().
+  let mut suites = manifest.suites.unwrap().iter().
     map(|item| {
       convert_manifest_suite(&path, item)
     }).

@@ -4,6 +4,8 @@ manifests = [
   "subdirectory2/overlord.toml"
 ]
 
+# Optional groups of suites... obviously if there are no suites nothing can be
+# run but there may be root overlord files which only contain sub manifests...
 [[suites]]
 group = "unit"
 

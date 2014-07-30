@@ -9,7 +9,7 @@ pub struct Manifest {
   pub manifests: Option<Vec<Path>>,
 
   /// Individual suites inside of the primary manifest.
-  pub suites: Vec<ManifestSuite>
+  pub suites: Option<Vec<ManifestSuite>>
 }
 
 /// Individual suites inside of the manifest.
