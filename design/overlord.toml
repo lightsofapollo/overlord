@@ -4,13 +4,9 @@ manifests = [
   "subdirectory2/overlord.toml"
 ]
 
-# Descriptions for each suite these are seperate from individual suite
-# statements so each configuration file may list mutliple suites but only the
-# top level manifest is intended to contain the descriptions field.
-[descriptions]
-unit = "Unit tests"
+[[suites]]
+group = "unit"
 
-[suites.unit]
 # Rust glob based paths (no directory recursion)
 paths = ["foobar/*.rs"]
 
