@@ -6,7 +6,7 @@
 #[deriving(Decodable)]
 pub struct Manifest {
   /// Manifests may contain references to other manfiests.
-  pub manifests: Option<Vec<Path>>,
+  pub manifests: Option<Vec<String>>,
 
   /// Individual suites inside of the primary manifest.
   pub suites: Option<Vec<ManifestSuite>>

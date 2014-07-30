@@ -53,7 +53,10 @@ fn load_manifest(path: &Path) -> OverlordResult<Manifest> {
     Ok(v) => v,
     // TODO: Expand error messages.
     Err(e) => {
-      return Err(OverlordError::new(format!("Error decoding message: {}", e)))
+      return Err(OverlordError::new(format!(
+        "Error decoding message for '{}' {}",
+        path.display(), e
+      )))
     }
   };
 
@@ -76,29 +79,34 @@ fn convert_manifest_suite<'a>(path: &Path, suite: &ManifestSuite) -> Suite<'a> {
 fn issue_import(
   path: Path, seen_paths: &mut HashSet<Path>
 ) -> OverlordResult<Vec<Suite>> {
-  // Begin by registering the path in seen
+
+  // Check for circular dependencies.
+  if seen_paths.contains(&path) {
+    // TODO: Reconsider returning an error on seen paths.
+    return Ok(Vec::new());
+  }
+
+  // Ensure we don't load the same manifest twice.
   seen_paths.insert(path.clone());
 
   // Attempt to load the module for the seen path.
   let manifest = try!(load_manifest(&path));
+  let mut suites = Vec::new();
 
-  if manifest.suites.is_none() {
-    return Ok(Vec::new());
+  // Not all manifests have suites so handle both cases.
+  if manifest.suites.is_some() {
+    for suite in manifest.suites.unwrap().iter() {
+      suites.push(convert_manifest_suite(&path, suite));
+    }
   }
-
-  // List of suites in the group.
-  let mut suites = manifest.suites.unwrap().iter().
-    map(|item| {
-      convert_manifest_suite(&path, item)
-    }).
-    collect::<Vec<Suite>>();
 
   // The manifest _may_ contain other manifests if so we need to import those as
   // well.
   if manifest.manifests.is_none() {
     Ok(suites)
   } else {
-    for sub_manifest_path in manifest.manifests.unwrap().iter() {
+    for sub_manifest in manifest.manifests.unwrap().iter() {
+      let sub_manifest_path = Path::new(sub_manifest.as_slice());
       let absolute_manifest_path = path.dir_path().join(sub_manifest_path);
       let sub_suites = try!(issue_import(absolute_manifest_path, seen_paths));
       suites.push_all(sub_suites.as_slice());
@@ -138,5 +146,18 @@ mod test {
     assert_eq!(vec!["files/*.txt".to_string()], suite.paths);
     assert_eq!(suite.executable, "cat".to_string());
     assert_eq!(suite.group, "unit".to_string());
+  }
+
+  #[test]
+  fn nested_manifest() {
+    let suites = import(Path::new("test/multimanifest/overlord.toml")).unwrap();
+    assert_eq!(suites.len(), 4);
+  }
+
+  #[test]
+  fn circular_references() {
+    // Note that we don't throw an error but do our best effort to load suites.
+    let suites = import(Path::new("test/circular/overlord.toml")).unwrap();
+    assert_eq!(suites.len(), 1);
   }
 }

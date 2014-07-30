@@ -1,3 +1,4 @@
-[suites.unit]
-paths = []
-executable = "one"
+[[suites]]
+executable = "cat"
+group = "unit"
+paths = ["1.txt"]

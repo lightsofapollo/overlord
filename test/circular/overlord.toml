@@ -1,8 +1,8 @@
 manifests = [
-  "another/overlord.toml"
+  "overlord.toml"
 ]
 
 [[suites]]
 group = "unit"
-paths = ["nest.txt"]
+paths = []
 executable = "cat"

@@ -3,7 +3,3 @@ manifests = [
   "2/overlord.toml",
   "nested/overlord.toml"
 ]
-
-[suites.unit]
-paths = []
-executable = ""
