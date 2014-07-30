@@ -3,7 +3,6 @@
 // user facing interchange format.
 
 // All operations stem from the "suite" configuration.
-#[deriving(Clone)]
 pub struct Suite<'a> {
   /// Name of the "group" this suite belongs to.
   pub group: String,
