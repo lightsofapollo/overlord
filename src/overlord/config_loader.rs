@@ -1,7 +1,8 @@
 // This module handles loading all manifest files and converting files from the
 // manifest interchange format to the in memory strucutred format used in later
 // operations.
-use config::{Suite};
+use config::{Suite, SuitePath};
+use util::{PathWrapper};
 use interchange::{Manifest, ManifestSuite};
 use error::{OverlordError, OverlordResult};
 use serialize::{Decodable};
@@ -65,13 +66,15 @@ fn load_manifest(path: &Path) -> OverlordResult<Manifest> {
 
 // Convert the toml format into the in memory config format.
 fn convert_manifest_suite<'a>(path: &Path, suite: &ManifestSuite) -> Suite<'a> {
-  let root = path.dir_path();
+  let root = PathWrapper::new(path.dir_path());
+  let paths = suite.paths.iter().map(|path| {
+    SuitePath::new(&root, path.clone())
+  }).collect();
+
   Suite {
     root: root,
     group: suite.group.clone(),
-    paths: suite.paths.iter().map(|path| {
-      path.clone()
-    }).collect(),
+    paths: paths,
     executable: suite.executable.clone()
   }
 }
@@ -127,7 +130,8 @@ pub fn import<'a>(path: Path) -> OverlordResult<Vec<Suite<'a>>> {
 
 #[cfg(test)]
 mod tests {
-  use test::{assert_path_eq};
+  use config::{SuitePath};
+  use test::{assert_path_wrapper_eq};
   use config_loader::{import};
 
   #[test]
@@ -137,8 +141,13 @@ mod tests {
     assert_eq!(suites.len(), 1);
     let ref suite = suites[0];
 
-    assert_path_eq(&Path::new("test/simple"), &suite.root);
-    assert_eq!(vec!["files/*.txt".to_string()], suite.paths);
+    assert_path_wrapper_eq(&Path::new("test/simple"), &suite.root);
+
+    assert_eq!(
+      vec![SuitePath::new(&suite.root, "files/*.txt".to_string())],
+      suite.paths
+    );
+
     assert_eq!(suite.executable, "cat".to_string());
     assert_eq!(suite.group, "unit".to_string());
   }
@@ -150,10 +159,14 @@ mod tests {
     assert_eq!(suites.len(), 4);
 
     // Note that all suites are ordered so it is easy to assert root paths here.
-    assert_path_eq(&Path::new("test/multimanifest/1"), &suites[0].root);
-    assert_path_eq(&Path::new("test/multimanifest/2"), &suites[1].root);
-    assert_path_eq(&Path::new("test/multimanifest/nested"), &suites[2].root);
-    assert_path_eq(
+    assert_path_wrapper_eq(&Path::new("test/multimanifest/1"), &suites[0].root);
+    assert_path_wrapper_eq(&Path::new("test/multimanifest/2"), &suites[1].root);
+
+    assert_path_wrapper_eq(
+      &Path::new("test/multimanifest/nested"), &suites[2].root
+    );
+
+    assert_path_wrapper_eq(
       &Path::new("test/multimanifest/nested/another"), &suites[3].root
     );
   }
@@ -162,7 +175,7 @@ mod tests {
   fn circular_references() {
     // Note that we don't throw an error but do our best effort to load suites.
     let suites = import(Path::new("test/circular/overlord.toml")).unwrap();
-    assert_path_eq(&Path::new("test/circular"), &suites[0].root);
+    assert_path_wrapper_eq(&Path::new("test/circular"), &suites[0].root);
     assert_eq!(suites.len(), 1);
   }
 }
