@@ -11,6 +11,8 @@ pub mod error;
 pub mod config;
 pub mod interchange;
 pub mod config_loader;
+pub mod path_identifier;
+pub mod util;
 //pub mod config;
 //pub mod suite;
 //pub mod manifest;

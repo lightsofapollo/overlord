@@ -5,7 +5,7 @@ Parallel test amazing things (someday this currently does very little).
 ## TODO:
 
   - [x] Recursive manifest loading.
-  - []  Match files to suites
+  - [x] Match files to suites
   - []  Match suites to files
   - []  Execution of files in suites.
   - []  Parallel execution of files.
